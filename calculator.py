@@ -1,38 +1,42 @@
-    # calculator.py
+from flask import Flask, request, jsonify
 
-def add(x, y):
-    """This function adds two numbers"""
-    return x + y
+app = Flask(__name__)
 
-def subtract(x, y):
-    """This function subtracts two numbers"""
-    return x - y
+@app.route('/')
+def home():
+    return '''
+        <h1>Simple Calculator</h1>
+        <form action="/calculate" method="post">
+            <input type="number" name="num1" placeholder="Enter first number" required>
+            <input type="number" name="num2" placeholder="Enter second number" required>
+            <select name="operation">
+                <option value="add">Add</option>
+                <option value="subtract">Subtract</option>
+                <option value="multiply">Multiply</option>
+                <option value="divide">Divide</option>
+            </select>
+            <button type="submit">Calculate</button>
+        </form>
+    '''
 
-def multiply(x, y):
-    """This function multiplies two numbers"""
-    return x * y
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    num1 = float(request.form['num1'])
+    num2 = float(request.form['num2'])
+    operation = request.form['operation']
 
-def divide(x, y):
-    """This function divides two numbers"""
-    if y == 0:
-        raise ValueError("Cannot divide by zero!")
-    return x / y
-
-if __name__ == "__main__":
-    print("Simple Calculator")
-    num1 = float(input("Enter first number: "))
-    num2 = float(input("Enter second number: "))
-    
-    print("Operations: 1.Add 2.Subtract 3.Multiply 4.Divide")
-    choice = input("Choose operation (1/2/3/4): ")
-    
-    if choice == '1':
-        print(f"{num1} + {num2} = {add(num1, num2)}")
-    elif choice == '2':
-        print(f"{num1} - {num2} = {subtract(num1, num2)}")
-    elif choice == '3':
-        print(f"{num1} * {num2} = {multiply(num1, num2)}")
-    elif choice == '4':
-        print(f"{num1} / {num2} = {divide(num1, num2)}")
+    if operation == 'add':
+        result = num1 + num2
+    elif operation == 'subtract':
+        result = num1 - num2
+    elif operation == 'multiply':
+        result = num1 * num2
+    elif operation == 'divide':
+        result = num1 / num2
     else:
-        print("Invalid choice")
+        result = 'Invalid operation'
+
+    return jsonify(result=result)
+
+if __name__ == '__main__':
+    app.run(debug=True)
